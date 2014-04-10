@@ -4,8 +4,8 @@
 import PyML
 from PyML import *
 
-datfile = 'test1.data'
-testfile = 'test3.data'
+datfile = 'data1'
+testfile = 'data2'
 # CSV organized like so:
 # size, time delta, IsDestinationBlocked
 

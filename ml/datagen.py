@@ -9,12 +9,26 @@ from __future__ import print_function
 import dpkt
 import socket
 
+def dnsLookup(dst_ip):
+	try:
+		tuple = socket.gethostbyaddr(dst_ip)
+		return tuple[0]
+	except socket.herror:
+		return "ERROR"
+
 def isBlocked(dst_ip):
-    return dst_ip == '141.212.109.161'
+	name = dnsLookup(dst_ip)
+	#print(name)
+	#return False
+	return name == 'ord08s08-in-f16.1e100.net'
+   
+
+ #return dst_ip == '141.212.109.161'
 
 filename   =  'google_pageload_std_v2 copy.pcapng'
 filename1  =  'google_interaction.s0i0.pcap'
 filename2  =  'google_pageload_std_v2 copy.s0i0'
+filename3  =  'google_pageload_std_v2 copy.s0i0.pcap'
 
 #counter = 0
 #ipcounter = 0

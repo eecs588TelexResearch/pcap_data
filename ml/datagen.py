@@ -9,21 +9,25 @@ from __future__ import print_function
 import dpkt
 import socket
 import sys
+import whois
 
 def dnsLookup(dst_ip):
 	try:
-		tuple = socket.gethostbyaddr(dst_ip)
-		# print( tuple )
-		return tuple[0]
+		# tuple = socket.gethostbyaddr(dst_ip)
+		domain = whois.query(dst_ip)
+		print(domain.__dict__)
+		return domain.name
 	except socket.herror:
 		return "ERROR"
 
 def isBlocked(dst_ip):
-	name = dnsLookup(dst_ip)
-	#print(name)
-	#return False
-	# return name == 'ord08s08-in-f16.1e100.net'
-	return name.find('1e100.net') > 0
+	return dst_ip.find('74.125') >= 0 or dst_ip.find('173.194') >= 0
+	# print(name)
+	# #return False
+	# # return name == 'ord08s08-in-f16.1e100.net'
+	# if name == "ERROR" :
+	# 	return False
+	# return name.find('1e100.net') > 0
 
 
 def main():
@@ -45,7 +49,8 @@ def main():
 		last_time = ts
 
 		# size, time delta, is dest IP blocked
-		print( len(pkt),",",delta,",",isBlocked(dst_ip_addr_str), sep='')
+		if dst_ip_addr_str.find("192.168") < 0:
+			print( len(pkt),",",delta,",",isBlocked(dst_ip_addr_str), sep='')
 
 if __name__ == "__main__":
     main()

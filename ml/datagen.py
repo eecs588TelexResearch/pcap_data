@@ -71,7 +71,9 @@ def main():
 		else:
 			flows[ipkey] = [ packetList ]
 
-	pprint.pprint(flows)
+	#pprint.pprint(flows)
+        for key in flows:
+            print(key, len(flows[key]))
 
 
 if __name__ == "__main__":

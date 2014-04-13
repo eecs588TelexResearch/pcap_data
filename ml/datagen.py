@@ -60,12 +60,11 @@ def main():
 		#print( len(pkt),",",delta,",",dst_ip_addr_str, sep='')
 
 		ipkey = dst_ip_addr_str
-		home = '192.168.1.1'
-		###src_ip_addr_str = socket.inet_ntoa(ip.src)
+		home = '192.168.'
+		src_ip_addr_str = socket.inet_ntoa(ip.src)
 
-		if ipkey == home:
-			###ipkey = src_ip_addr_str
-			continue
+		if ipkey.find(home) >= 0:
+			ipkey = src_ip_addr_str
 
 		if ipkey in flows:
 			flows[ipkey].append(packetList)

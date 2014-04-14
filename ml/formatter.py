@@ -11,6 +11,8 @@ import operator
 def main():
     max_file = int(sys.argv[1])
     flows = {}
+    drop_file_count = 0
+    drop_packet_count = 0
 
     print(max_file)
 
@@ -18,17 +20,25 @@ def main():
         last_time = 0
         packet_count = 0
         list_of_packetLists = []
+        server_ip = ""
         for ts, pkt in dpkt.pcap.Reader(open("streams/stream-" + str(i) + ".pcap", 'r')):
-
             eth = dpkt.ethernet.Ethernet(pkt)
             if eth.type != dpkt.ethernet.ETH_TYPE_IP:
-                print("DROP")
+                drop_packet_count += 1
                 continue
             ip = eth.data
+            dst_ip_addr_str = socket.inet_ntoa(ip.dst)
+            src_ip_addr_str = socket.inet_ntoa(ip.src)
+
+            # if first packet in the file, set server_ip to the remote ip
+            # and check that it isn't equal to an outlier. if so, skip file
+            if packet_count == 0:
+                server_ip = dst_ip_addr_str if src_ip_addr_str.find("35.2") == 0 else src_ip_addr_str
+                if server_ip.find('173.192') == 0 or server_ip.find("184.173") == 0 :
+                    drop_file_count += 1
+                    break
 
             packet_count += 1
-
-            dst_ip_addr_str = socket.inet_ntoa(ip.dst)
             if last_time == 0:
                 delta = 0
             else:
@@ -39,8 +49,14 @@ def main():
             packetList = [ ts, len(pkt), delta, dst_ip_addr_str ]
             list_of_packetLists.append(packetList)
 
+        # if file skipped, continue
+        if packet_count == 0:
+            continue
+
         flows[i] = [packet_count, list_of_packetLists]
-        if packet_count <= 50:
+        #uncomment to include server ip above classification for debugging
+        #print(server_ip)
+        if server_ip.find("180.76") == 0:
             print("Baidu")
         else:
             print("Google")
@@ -52,6 +68,9 @@ def main():
             else :
                 classification = "send"
             print(pl[1], pl[2], classification)
+
+    sys.stderr.write("dropped packets: " + str(drop_packet_count)
+        + " dropped files: " + str(drop_file_count))
 
 
 

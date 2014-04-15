@@ -7,7 +7,7 @@ import sys
 import pprint
 import operator
 
-# run from data_collection
+
 def main():
     if len(sys.argv) < 3:
         print("Usage: formatter.py <stream_dir> <number of files>")
@@ -18,7 +18,11 @@ def main():
     drop_file_count = 0
     drop_packet_count = 0
 
-    print(max_file)
+    #print(max_file)
+
+    num_traces = 0
+
+    content = ""
 
     for i in range(0, max_file):
         last_time = 0
@@ -43,6 +47,7 @@ def main():
                     break
 
             packet_count += 1
+
             if last_time == 0:
                 delta = 0
             else:
@@ -57,21 +62,29 @@ def main():
         if packet_count == 0:
             continue
 
+        num_traces += 1
         flows[i] = [packet_count, list_of_packetLists]
         #uncomment to include server ip above classification for debugging
         #print(server_ip)
         if server_ip.find("180.76") == 0:
-            print("Baidu")
+            #print("Baidu")
+            content = content + "Baidu\n"
         else:
-            print("Google")
-        print(packet_count)
+            #print("Google")
+            content = content + "Google\n"
+        #print(packet_count)
+        content = content + (packet_count + "\n")
         for pl in list_of_packetLists:
             classification = ""
             if pl[3].find("35.2") == 0 :
                 classification = "recv"
             else :
                 classification = "send"
-            print(pl[1], pl[2], classification)
+            #print(pl[1], pl[2], classification)
+            content = content + (pl[1] + " " + pl[2] + " " + classification + "\n")
+
+    print(num_traces)
+    print(content)
 
     sys.stderr.write("dropped packets: " + str(drop_packet_count)
         + " dropped files: " + str(drop_file_count))

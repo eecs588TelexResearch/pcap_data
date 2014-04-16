@@ -12,6 +12,7 @@ def main():
     directory_name = sys.argv[1]
     max_file = int(sys.argv[2])
     last_time = 0
+    global_dict = {}
     for i in range(0, max_file):
         ip_dict = {}
         packet_count = 0
@@ -24,12 +25,21 @@ def main():
             ip = eth.data
             #ipcounter += 1
             dst_ip_addr_str = socket.inet_ntoa(ip.dst)
-            if dst_ip_addr_str in ip_dict:
-                    ip_dict[dst_ip_addr_str] += 1
-            else :
-                    ip_dict[dst_ip_addr_str] = 1
+
+            update_dict(ip_dict, dst_ip_addr_str)
+            update_dict(global_dict, dst_ip_addr_str)
+
         print("stream-" + str(i) + ".pcap: " + str(packet_count) + " packets")
         pprint.pprint(ip_dict)
+    
+    print("\nGlobal Statistics:")
+    pprint.pprint(global_dict)
+
+def update_dict(dictionary, key):
+    if key in dictionary:
+            dictionary[key] += 1
+    else :
+            dictionary[key] = 1
 
 if __name__ == "__main__":
     main()
